@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { accessRequests, oauthApplication } from "@/lib/schema";
 import { eq } from "drizzle-orm";
-import { sendEmail, escapeHtml } from "@/lib/email";
+import { sendEmail, escapeHtml, renderEmailTemplate } from "@/lib/email";
 import { enforceSameOrigin } from "@/lib/security";
 
 export async function POST(
@@ -42,14 +42,12 @@ export async function POST(
   sendEmail({
     to: accessRequest.email,
     subject: `Your ${appName} access request`,
-    html: `
-      <p>Hi ${escapeHtml(accessRequest.name)},</p>
-      <p>Thank you for your interest in ${escapeHtml(appName)}.</p>
-      <p>Unfortunately, your access request has not been approved at this time.</p>
-      <p>If you believe this is an error, please contact your ministry leader or IT administrator.</p>
-      <br/>
-      <p>Cleverfish IT</p>
-    `,
+    html: renderEmailTemplate({
+      heading: "Access request not approved",
+      intro: `Hi ${escapeHtml(accessRequest.name)}, thank you for your interest in <strong>${escapeHtml(appName)}</strong>. Unfortunately, your access request has not been approved at this time. If you believe this is an error, please contact your ministry leader or IT administrator.`,
+      ctaText: "Back to sign in",
+      ctaUrl: `${process.env.BETTER_AUTH_URL}/sign-in`,
+    }),
   }).catch((e) => console.error("[reject] notify failed:", e));
 
   await db

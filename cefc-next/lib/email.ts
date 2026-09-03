@@ -21,7 +21,14 @@ export function renderEmailTemplate({
 }): string {
   const logoUrl = `${process.env.BETTER_AUTH_URL ?? ""}/email-logo.png`;
 
-  return `
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${heading}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f0f0ee;">
 <div style="background-color:#f0f0ee;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <div style="max-width:480px;margin:0 auto;background-color:#ffffff;border:1px solid #dcdcda;border-radius:16px;padding:40px 32px;">
     <div style="text-align:center;margin-bottom:32px;">
@@ -36,7 +43,30 @@ export function renderEmailTemplate({
     <hr style="border:none;border-top:1px solid #ececec;margin:0 0 20px;" />
     <p style="font-size:13px;color:#8a8a8a;margin:0;">${footer}</p>
   </div>
-</div>`;
+</div>
+</body>
+</html>`;
+}
+
+function normalizeEmailHtml(html: string) {
+  if (/^\s*(<!doctype|<html)/i.test(html)) return html;
+  return `<!doctype html><html lang="en"><body>${html}</body></html>`;
+}
+
+function htmlToText(html: string) {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|h[1-6]|li)>/gi, "\n")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
 }
 
 const port = Number(process.env.SMTP_PORT);
@@ -54,15 +84,19 @@ export async function sendEmail({
   to,
   subject,
   html,
+  text,
 }: {
   to: string;
   subject: string;
   html: string;
+  text?: string;
 }) {
-  await transporter.sendMail({
+  const normalizedHtml = normalizeEmailHtml(html);
+  return transporter.sendMail({
     from: process.env.SMTP_FROM,
     to,
     subject,
-    html,
+    html: normalizedHtml,
+    text: text ?? htmlToText(normalizedHtml),
   });
 }
