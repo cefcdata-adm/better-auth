@@ -19,8 +19,6 @@ export function renderEmailTemplate({
   ctaUrl: string;
   footer?: string;
 }): string {
-  const logoUrl = `${process.env.BETTER_AUTH_URL ?? ""}/email-logo.png`;
-
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -31,8 +29,8 @@ export function renderEmailTemplate({
 <body style="margin:0;padding:0;background-color:#f0f0ee;">
 <div style="background-color:#f0f0ee;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <div style="max-width:480px;margin:0 auto;background-color:#ffffff;border:1px solid #dcdcda;border-radius:16px;padding:40px 32px;">
-    <div style="text-align:center;margin-bottom:32px;">
-      <img src="${logoUrl}" alt="Cleverfish" height="21" style="height:21px;width:auto;display:inline-block;border:0;" />
+    <div style="text-align:center;margin-bottom:32px;color:#1f2328;font-size:20px;font-weight:800;letter-spacing:-0.02em;">
+      Cleverfish
     </div>
     <h1 style="font-size:22px;font-weight:700;color:#1f2328;margin:0 0 16px;">${heading}</h1>
     <p style="font-size:15px;line-height:1.6;color:#3f3f3f;margin:0 0 24px;">${intro}</p>
