@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import SignInForm from "./SignInForm";
 
+const signInBackground =
+  "linear-gradient(120deg, rgb(10 20 16 / 0.82), rgb(10 20 16 / 0.58)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80')";
+
 // If the user already has a valid session AND arrived via an OIDC authorize
 // redirect (client_id present), skip the sign-in form entirely and forward
 // them straight to the authorize endpoint so the OIDC flow completes.
@@ -26,8 +29,11 @@ export default async function SignInPage({
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen bg-[#1c1c1c] items-center justify-center px-4 py-8 sm:px-8">
-          <p className="text-zinc-400 text-sm">Loading...</p>
+        <div
+          className="flex min-h-screen bg-[#1c1c1c] bg-cover bg-center items-center justify-center px-4 py-8 sm:px-8"
+          style={{ backgroundImage: signInBackground }}
+        >
+          <p className="text-white text-sm">Loading...</p>
         </div>
       }
     >

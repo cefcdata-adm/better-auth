@@ -19,7 +19,7 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
-        subject: "Set your password — CEFC",
+        subject: "Set your password — Cleverfish",
         html: renderEmailTemplate({
           heading: "Set your password",
           intro: `Hi ${escapeHtml(user.name)}, your access request has been approved. Click below to set your password and sign in. This link expires in 1 hour — if you did not request access, you can ignore this email.`,

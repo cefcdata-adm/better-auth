@@ -48,7 +48,7 @@ function ResetPasswordForm() {
         <p className="text-zinc-400 text-sm mb-6">You can now sign in with your new password.</p>
         <button
           onClick={() => router.push("/sign-in")}
-          className="px-6 py-2.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-semibold text-sm transition-colors"
+          className="px-6 py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors"
         >
           Go to Sign In
         </button>
@@ -73,7 +73,7 @@ function ResetPasswordForm() {
             placeholder="At least 8 characters"
             required
             autoComplete="new-password"
-            className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-500"
           />
         </div>
         <div>
@@ -88,7 +88,7 @@ function ResetPasswordForm() {
             placeholder="Repeat your password"
             required
             autoComplete="new-password"
-            className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500"
+            className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-500"
           />
         </div>
         {error && <p role="alert" className="text-red-400 text-sm">{error}</p>}
@@ -96,7 +96,7 @@ function ResetPasswordForm() {
           type="submit"
           disabled={loading}
           aria-busy={loading}
-          className="w-full py-2.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
+          className="w-full py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
         >
           {loading ? "Setting password..." : "Set Password"}
         </button>

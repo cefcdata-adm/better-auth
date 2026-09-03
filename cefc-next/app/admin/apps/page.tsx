@@ -22,6 +22,8 @@ type EditingApp = {
   postLogoutRedirectUris: string;
   sessionTimeout: string;
 } | null;
+type SortDirection = "asc" | "desc";
+type AppSortField = "name" | "clientId" | "subdomain" | "sessionTimeout" | "createdAt";
 
 export default function AppsPage() {
   const [apps, setApps] = useState<App[]>([]);
@@ -33,6 +35,8 @@ export default function AppsPage() {
   const [usersPanelClientId, setUsersPanelClientId] = useState<string | null>(null);
   const [editingApp, setEditingApp] = useState<EditingApp>(null);
   const [saving, setSaving] = useState(false);
+  const [appSortField, setAppSortField] = useState<AppSortField>("createdAt");
+  const [appSortDirection, setAppSortDirection] = useState<SortDirection>("desc");
 
   const [formName, setFormName] = useState("");
   const [formSubdomain, setFormSubdomain] = useState("");
@@ -157,6 +161,48 @@ export default function AppsPage() {
     fetchApps();
   }
 
+  function handleAppSort(field: AppSortField) {
+    if (appSortField === field) {
+      setAppSortDirection(appSortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setAppSortField(field);
+      setAppSortDirection(field === "createdAt" ? "desc" : "asc");
+    }
+    setUsersPanelClientId(null);
+  }
+
+  function renderAppSortHeader(label: string, field: AppSortField) {
+    const active = appSortField === field;
+    return (
+      <button
+        type="button"
+        onClick={() => handleAppSort(field)}
+        className="inline-flex items-center gap-1 text-left transition-colors hover:text-white"
+      >
+        <span>{label}</span>
+        <span className={active ? "text-emerald-400" : "text-zinc-600"}>
+          {active ? (appSortDirection === "asc" ? "^" : "v") : "-"}
+        </span>
+      </button>
+    );
+  }
+
+  const sortedApps = [...apps].sort((a, b) => {
+    let result = 0;
+
+    if (appSortField === "createdAt") {
+      result = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    } else if (appSortField === "sessionTimeout") {
+      result = (a.metadata.sessionTimeout ?? 28800) - (b.metadata.sessionTimeout ?? 28800);
+    } else if (appSortField === "subdomain") {
+      result = (a.metadata.subdomain ?? "").localeCompare(b.metadata.subdomain ?? "");
+    } else {
+      result = String(a[appSortField] ?? "").localeCompare(String(b[appSortField] ?? ""));
+    }
+
+    return appSortDirection === "asc" ? result : -result;
+  });
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -166,7 +212,7 @@ export default function AppsPage() {
         </div>
         <button
           onClick={() => { setShowForm(true); setEditingApp(null); setError(""); }}
-          className="px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium transition-colors"
+          className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-medium transition-colors"
         >
           Register App
         </button>
@@ -188,38 +234,38 @@ export default function AppsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-1">App Name</label>
-                <input value={formName} onChange={e => setFormName(e.target.value)} required placeholder="CEFC Collab"
-                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                <input value={formName} onChange={e => setFormName(e.target.value)} required placeholder="Cleverfish App"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-1">Subdomain</label>
-                <input value={formSubdomain} onChange={e => setFormSubdomain(e.target.value)} placeholder="collab.cefc.org.sg"
-                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                <input value={formSubdomain} onChange={e => setFormSubdomain(e.target.value)} placeholder="app.cleverfish.example"
+                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Redirect URIs (one per line)</label>
               <textarea value={formRedirectUris} onChange={e => setFormRedirectUris(e.target.value)} required rows={3}
-                placeholder={"https://collab.cefc.org.sg/api/auth/oauth2/callback/cefc-auth\nhttp://localhost:3001/api/auth/oauth2/callback/cefc-auth"}
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono" />
+                placeholder={"https://app.cleverfish.example/api/auth/oauth2/callback/cleverfish-auth\nhttp://localhost:3001/api/auth/oauth2/callback/cleverfish-auth"}
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500 font-mono" />
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Post-Logout Redirect URIs (one per line)</label>
               <textarea value={formPostLogoutRedirectUris} onChange={e => setFormPostLogoutRedirectUris(e.target.value)} rows={2}
-                placeholder={"https://collab.cefc.org.sg/sign-in"}
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono" />
+                placeholder={"https://app.cleverfish.example/sign-in"}
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500 font-mono" />
               <p className="text-zinc-500 text-xs mt-1">Optional. These are also registered with Better Auth so end-session redirects will pass validation.</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Session Timeout (seconds)</label>
               <input type="number" value={formSessionTimeout} onChange={e => setFormSessionTimeout(e.target.value)} min="300"
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
               <p className="text-zinc-500 text-xs mt-1">Default: 28800 (8 hours)</p>
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <div className="flex gap-3">
               <button type="submit" disabled={creating}
-                className="px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium transition-colors disabled:opacity-50">
+                className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-medium transition-colors disabled:opacity-50">
                 {creating ? "Registering..." : "Register"}
               </button>
               <button type="button" onClick={() => { setShowForm(false); setError(""); }}
@@ -239,34 +285,34 @@ export default function AppsPage() {
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-1">App Name</label>
                 <input value={editingApp.name} onChange={e => setEditingApp({ ...editingApp, name: e.target.value })} required
-                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-zinc-300 mb-1">Subdomain</label>
                 <input value={editingApp.subdomain} onChange={e => setEditingApp({ ...editingApp, subdomain: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                  className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Redirect URIs (one per line)</label>
               <textarea value={editingApp.redirectUris} onChange={e => setEditingApp({ ...editingApp, redirectUris: e.target.value })} required rows={3}
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono" />
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500 font-mono" />
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Post-Logout Redirect URIs (one per line)</label>
               <textarea value={editingApp.postLogoutRedirectUris} onChange={e => setEditingApp({ ...editingApp, postLogoutRedirectUris: e.target.value })} rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500 font-mono" />
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500 font-mono" />
               <p className="text-zinc-500 text-xs mt-1">Optional. Better Auth validates these against the registered URI list during end-session requests.</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-1">Session Timeout (seconds)</label>
               <input type="number" value={editingApp.sessionTimeout} onChange={e => setEditingApp({ ...editingApp, sessionTimeout: e.target.value })} min="300"
-                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-purple-500" />
+                className="w-full px-3 py-2 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white text-sm focus:outline-none focus:border-emerald-500" />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
             <div className="flex gap-3">
               <button type="submit" disabled={saving}
-                className="px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 text-white text-sm font-medium transition-colors disabled:opacity-50">
+                className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-sm font-medium transition-colors disabled:opacity-50">
                 {saving ? "Saving..." : "Save"}
               </button>
               <button type="button" onClick={() => { setEditingApp(null); setError(""); }}
@@ -285,16 +331,16 @@ export default function AppsPage() {
           <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="border-b border-zinc-700">
-                <th className="text-left px-4 py-3 text-zinc-400 font-medium">Name</th>
-                <th className="text-left px-4 py-3 text-zinc-400 font-medium">Client ID</th>
-                <th className="text-left px-4 py-3 text-zinc-400 font-medium">Subdomain</th>
-                <th className="text-left px-4 py-3 text-zinc-400 font-medium">Session</th>
-                <th className="text-left px-4 py-3 text-zinc-400 font-medium">Created</th>
+                <th className="text-left px-4 py-3 text-zinc-400 font-medium" aria-sort={appSortField === "name" ? (appSortDirection === "asc" ? "ascending" : "descending") : "none"}>{renderAppSortHeader("Name", "name")}</th>
+                <th className="text-left px-4 py-3 text-zinc-400 font-medium" aria-sort={appSortField === "clientId" ? (appSortDirection === "asc" ? "ascending" : "descending") : "none"}>{renderAppSortHeader("Client ID", "clientId")}</th>
+                <th className="text-left px-4 py-3 text-zinc-400 font-medium" aria-sort={appSortField === "subdomain" ? (appSortDirection === "asc" ? "ascending" : "descending") : "none"}>{renderAppSortHeader("Subdomain", "subdomain")}</th>
+                <th className="text-left px-4 py-3 text-zinc-400 font-medium" aria-sort={appSortField === "sessionTimeout" ? (appSortDirection === "asc" ? "ascending" : "descending") : "none"}>{renderAppSortHeader("Session", "sessionTimeout")}</th>
+                <th className="text-left px-4 py-3 text-zinc-400 font-medium" aria-sort={appSortField === "createdAt" ? (appSortDirection === "asc" ? "ascending" : "descending") : "none"}>{renderAppSortHeader("Created", "createdAt")}</th>
                 <th className="text-left px-4 py-3 text-zinc-400 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {apps.map((app) => (
+              {sortedApps.map((app) => (
                 <Fragment key={app.id}>
                   <tr className="border-b border-zinc-800 hover:bg-zinc-800/40 transition-colors">
                     <td className="px-4 py-3 text-white font-medium">{app.name}</td>
@@ -306,7 +352,7 @@ export default function AppsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setUsersPanelClientId(usersPanelClientId === app.clientId ? null : app.clientId)}
-                          className="px-3 py-1 rounded text-xs font-medium bg-blue-900 text-blue-200 hover:bg-blue-800 transition-colors"
+                          className="px-3 py-1 rounded text-xs font-medium bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition-colors"
                         >
                           Users
                         </button>

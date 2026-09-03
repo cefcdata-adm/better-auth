@@ -29,14 +29,14 @@ export async function POST(
     return NextResponse.json({ error: "Request is not pending." }, { status: 409 });
   }
 
-  let appName = "CEFC Woodlands";
+  let appName = "Cleverfish";
   if (accessRequest.clientId) {
     const appRows = await db
       .select({ name: oauthApplication.name })
       .from(oauthApplication)
       .where(eq(oauthApplication.clientId, accessRequest.clientId))
       .limit(1);
-    appName = appRows[0]?.name ?? "CEFC Woodlands";
+    appName = appRows[0]?.name ?? "Cleverfish";
   }
 
   sendEmail({
@@ -48,7 +48,7 @@ export async function POST(
       <p>Unfortunately, your access request has not been approved at this time.</p>
       <p>If you believe this is an error, please contact your ministry leader or IT administrator.</p>
       <br/>
-      <p>CEFC Woodlands IT</p>
+      <p>Cleverfish IT</p>
     `,
   }).catch((e) => console.error("[reject] notify failed:", e));
 

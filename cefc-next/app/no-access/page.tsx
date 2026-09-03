@@ -35,12 +35,12 @@ export default async function NoAccessPage({
         {client_id && (
           <Link
             href={`/request-access?client_id=${encodeURIComponent(client_id)}`}
-            className="block w-full py-2.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-semibold text-sm transition-colors text-center mb-4"
+            className="block w-full py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors text-center mb-4"
           >
             Request Access
           </Link>
         )}
-        <Link href="/sign-in" className="text-purple-400 text-sm hover:underline">
+        <Link href="/sign-in" className="text-emerald-400 text-sm hover:underline">
           Back to sign in
         </Link>
       </div>

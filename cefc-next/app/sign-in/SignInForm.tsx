@@ -1,14 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+
+const signInBackgrounds = [
+  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80",
+  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1920&q=80",
+  "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1920&q=80",
+  "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1920&q=80",
+  "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1920&q=80",
+];
+
+function getSignInBackground(url: string) {
+  return `linear-gradient(120deg, rgb(10 20 16 / 0.84), rgb(10 20 16 / 0.62)), url('${url}')`;
+}
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState(getSignInBackground(signInBackgrounds[0]));
 
   const searchParams = useSearchParams();
   const clientId = searchParams.get("client_id");
@@ -23,6 +36,11 @@ export default function SignInForm() {
   const requestAccessHref = clientId
     ? `/request-access?client_id=${encodeURIComponent(clientId)}`
     : "/request-access";
+
+  useEffect(() => {
+    const image = signInBackgrounds[Math.floor(Math.random() * signInBackgrounds.length)];
+    setBackgroundImage(getSignInBackground(image));
+  }, []);
 
   async function handleEmailSignIn(e: React.FormEvent) {
     e.preventDefault();
@@ -52,12 +70,15 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#1c1c1c] items-center justify-center px-4 py-8 sm:px-8">
-        <div className="w-full max-w-sm bg-[#2a2a2a] rounded-xl p-6 sm:p-8 border border-zinc-700">
-          <h2 className="text-xl font-bold text-white text-center mb-1">
+    <div
+      className="flex min-h-screen bg-[#1c1c1c] bg-cover bg-center items-center justify-center px-4 py-8 sm:px-8"
+      style={{ backgroundImage }}
+    >
+        <div className="w-full max-w-sm rounded-xl border border-white/70 bg-white/95 p-6 shadow-2xl backdrop-blur sm:p-8">
+          <h2 className="text-xl font-bold text-zinc-950 text-center mb-1">
             Cleverfish
           </h2>
-          <p className="text-zinc-400 text-sm text-center mb-6">
+          <p className="text-zinc-600 text-sm text-center mb-6">
             Welcome back! Please sign in to continue
           </p>
 
@@ -67,7 +88,7 @@ export default function SignInForm() {
               type="button"
               onClick={() => handleSocialSignIn("google")}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-zinc-600 bg-[#1c1c1c] text-white text-sm hover:bg-zinc-800 transition-colors"
+              className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-zinc-300 bg-white text-zinc-900 text-sm hover:bg-zinc-100 transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -81,15 +102,15 @@ export default function SignInForm() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-zinc-700" />
+            <div className="flex-1 h-px bg-zinc-200" />
             <span className="text-zinc-500 text-sm">or</span>
-            <div className="flex-1 h-px bg-zinc-700" />
+            <div className="flex-1 h-px bg-zinc-200" />
           </div>
 
           {/* Email/Password Form */}
           <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-800 mb-1">
                 Email address
               </label>
               <input
@@ -100,11 +121,11 @@ export default function SignInForm() {
                 placeholder="Enter your email address"
                 required
                 autoComplete="username"
-                className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2.5 rounded-lg bg-white border border-zinc-300 text-zinc-950 placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-600"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-zinc-800 mb-1">
                 Password
               </label>
               <input
@@ -115,7 +136,7 @@ export default function SignInForm() {
                 placeholder="Enter your password"
                 required
                 autoComplete="current-password"
-                className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full px-3 py-2.5 rounded-lg bg-white border border-zinc-300 text-zinc-950 placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-600"
               />
             </div>
             {error && <p role="alert" className="text-red-400 text-sm">{error}</p>}
@@ -123,7 +144,7 @@ export default function SignInForm() {
               type="submit"
               disabled={loading}
               aria-busy={loading}
-              className="w-full py-2.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
+              className="w-full py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
             >
               {loading ? "Signing in..." : "Sign In"}
             </button>
@@ -131,7 +152,7 @@ export default function SignInForm() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <a href={requestAccessHref} className="text-purple-400 text-sm hover:underline">
+            <a href={requestAccessHref} className="text-emerald-700 text-sm font-medium hover:underline">
               Request for Access
             </a>
           </div>

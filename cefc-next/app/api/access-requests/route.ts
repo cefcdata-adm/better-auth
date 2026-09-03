@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Fetch app name for emails if clientId provided
-  let appName = "CEFC Woodlands";
+  let appName = "Cleverfish";
   if (clientId) {
     const appRows = await db
       .select({ name: oauthApplication.name, clientId: oauthApplication.clientId })
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (appRows.length === 0) {
       return NextResponse.json({ error: "Requested application was not found." }, { status: 400 });
     }
-    appName = appRows[0]?.name ?? "CEFC Woodlands";
+    appName = appRows[0]?.name ?? "Cleverfish";
   }
 
   await db.insert(accessRequests).values({

@@ -12,7 +12,7 @@ export function RequestAccessForm({ clientId, appName }: Props) {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const displayName = appName ?? "CEFC Woodlands";
+  const displayName = appName ?? "Cleverfish";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -50,7 +50,7 @@ export function RequestAccessForm({ clientId, appName }: Props) {
             <p className="text-zinc-400 text-sm mb-6">
               Your request has been submitted. We&apos;ll be in touch.
             </p>
-            <Link href="/sign-in" className="text-purple-400 text-sm hover:underline">
+            <Link href="/sign-in" className="text-emerald-400 text-sm hover:underline">
               Back to sign in
             </Link>
           </div>
@@ -67,22 +67,22 @@ export function RequestAccessForm({ clientId, appName }: Props) {
                 <label htmlFor="name" className="block text-sm font-medium text-white mb-1">Full name</label>
                 <input id="name" type="text" value={name} onChange={e => setName(e.target.value)}
                   placeholder="Your full name" required autoComplete="name"
-                  className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500" />
+                  className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-white mb-1">Email address</label>
                 <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="Your email address" required autoComplete="email"
-                  className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-purple-500" />
+                  className="w-full px-3 py-2.5 rounded-lg bg-[#1c1c1c] border border-zinc-600 text-white placeholder-zinc-500 text-sm focus:outline-none focus:border-emerald-500" />
               </div>
               {error && <p role="alert" className="text-red-400 text-sm">{error}</p>}
               <button type="submit" disabled={loading} aria-busy={loading}
-                className="w-full py-2.5 rounded-lg bg-purple-700 hover:bg-purple-600 text-white font-semibold text-sm transition-colors disabled:opacity-50">
+                className="w-full py-2.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors disabled:opacity-50">
                 {loading ? "Submitting..." : "Submit Request"}
               </button>
             </form>
             <div className="mt-6 text-center">
-              <Link href="/sign-in" className="text-purple-400 text-sm hover:underline">Back to sign in</Link>
+              <Link href="/sign-in" className="text-emerald-400 text-sm hover:underline">Back to sign in</Link>
             </div>
           </>
         )}

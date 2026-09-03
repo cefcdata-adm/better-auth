@@ -32,7 +32,7 @@ export async function POST(
   }
 
   // Look up app name if this request is app-specific
-  let appName = "CEFC Woodlands";
+  let appName = "Cleverfish";
   let appUrl: string | null = null;
   if (accessRequest.clientId) {
     const appRows = await db
@@ -43,7 +43,7 @@ export async function POST(
     if (appRows.length === 0) {
       return NextResponse.json({ error: "Requested application no longer exists." }, { status: 409 });
     }
-    appName = appRows[0]?.name ?? "CEFC Woodlands";
+    appName = appRows[0]?.name ?? "Cleverfish";
     appUrl = parseOAuthMetadata(appRows[0]?.metadata).postLogoutRedirectUris[0] ?? null;
   }
 
@@ -105,7 +105,7 @@ export async function POST(
       subject: `Your access to ${appName} has been approved`,
       html: renderEmailTemplate({
         heading: "Access approved",
-        intro: `Hi ${escapeHtml(accessRequest.name)}, your request for access to <strong>${escapeHtml(appName)}</strong> has been approved. You can sign in now using your existing CEFC account.`,
+        intro: `Hi ${escapeHtml(accessRequest.name)}, your request for access to <strong>${escapeHtml(appName)}</strong> has been approved. You can sign in now using your existing Cleverfish account.`,
         ctaText: `Go to ${escapeHtml(appName)}`,
         ctaUrl: appLinkUrl,
       }),

@@ -15,7 +15,7 @@ export default function DashboardPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#1c1c1c]">
       <div className="text-center">
         <h1 className="text-2xl font-semibold text-white">You are logged in</h1>
-        <p className="mt-2 text-zinc-400">Welcome to CEFC Woodlands</p>
+        <p className="mt-2 text-zinc-400">Welcome to Cleverfish</p>
         <button
           onClick={handleSignOut}
           className="mt-6 px-4 py-2 rounded-lg bg-zinc-700 text-white text-sm hover:bg-zinc-600 transition-colors"

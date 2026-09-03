@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SignOutButton } from "./SignOutButton";
+import { ThemeToggle } from "../ThemeToggle";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -36,6 +37,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </Link>
       </nav>
       <div className="p-4 border-t border-zinc-800">
+        <ThemeToggle />
         <SignOutButton />
       </div>
     </>

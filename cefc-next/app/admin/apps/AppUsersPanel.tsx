@@ -52,7 +52,7 @@ export function AppUsersPanel({ clientId, appName, onClose }: Props) {
         <div className="bg-zinc-900 rounded-lg border border-zinc-700 p-4">
           <div className="flex items-center justify-between mb-3">
             <p className="text-white text-sm font-semibold">
-              Users with access to <span className="text-purple-300">{appName}</span>
+              Users with access to <span className="text-emerald-300">{appName}</span>
             </p>
             <button onClick={onClose} className="text-zinc-500 hover:text-zinc-300 text-xs">
               Close

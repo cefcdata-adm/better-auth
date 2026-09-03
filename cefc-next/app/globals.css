@@ -5,6 +5,18 @@
   --foreground: #171717;
 }
 
+:root[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --background: #f6f5f2;
+  --foreground: #1f2328;
+  color-scheme: light;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -23,4 +35,67 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+:root[data-theme="light"] .bg-\[\#1c1c1c\] {
+  background-color: #f6f5f2;
+}
+
+:root[data-theme="light"] .bg-\[\#2a2a2a\],
+:root[data-theme="light"] .bg-\[\#141414\],
+:root[data-theme="light"] .bg-zinc-900 {
+  background-color: #ffffff;
+}
+
+:root[data-theme="light"] .bg-zinc-800,
+:root[data-theme="light"] .bg-zinc-800\/40,
+:root[data-theme="light"] .hover\:bg-zinc-800:hover {
+  background-color: #eeeae3;
+}
+
+:root[data-theme="light"] .bg-zinc-700,
+:root[data-theme="light"] .hover\:bg-zinc-700:hover {
+  background-color: #e4ded4;
+}
+
+:root[data-theme="light"] .hover\:bg-zinc-600:hover {
+  background-color: #d7cfc2;
+}
+
+:root[data-theme="light"] .text-white,
+:root[data-theme="light"] .text-zinc-200,
+:root[data-theme="light"] .text-zinc-300,
+:root[data-theme="light"] .hover\:text-white:hover,
+:root[data-theme="light"] .hover\:text-zinc-300:hover {
+  color: #1f2328;
+}
+
+:root[data-theme="light"] .text-zinc-400,
+:root[data-theme="light"] .text-zinc-500,
+:root[data-theme="light"] .text-zinc-600 {
+  color: #6b6258;
+}
+
+:root[data-theme="light"] .bg-emerald-700.text-white,
+:root[data-theme="light"] .hover\:bg-emerald-600.text-white:hover {
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .text-emerald-300,
+:root[data-theme="light"] .text-emerald-400 {
+  color: #047857;
+}
+
+:root[data-theme="light"] .border-zinc-600,
+:root[data-theme="light"] .border-zinc-700,
+:root[data-theme="light"] .border-zinc-800 {
+  border-color: #d7cfc2;
+}
+
+:root[data-theme="light"] .placeholder-zinc-500::placeholder {
+  color: #8a8176;
+}
+
+:root[data-theme="light"] .theme-toggle {
+  background-color: #ffffff;
 }

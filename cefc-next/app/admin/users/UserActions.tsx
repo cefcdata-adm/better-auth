@@ -79,7 +79,7 @@ export function UserActions({ user, onRefresh }: Props) {
         <button
           onClick={handleToggleRole}
           disabled={loading}
-          className="px-3 py-1 rounded text-xs font-medium bg-purple-900 text-purple-200 hover:bg-purple-800 transition-colors disabled:opacity-50"
+          className="px-3 py-1 rounded text-xs font-medium bg-emerald-900 text-emerald-100 hover:bg-emerald-800 transition-colors disabled:opacity-50"
         >
           {isAdmin ? "Demote" : "Make Admin"}
         </button>

@@ -10,7 +10,7 @@ export function renderEmailTemplate({
   quote,
   ctaText,
   ctaUrl,
-  footer = "CEFC Woodlands",
+  footer = "Cleverfish",
 }: {
   heading: string;
   intro: string;
@@ -25,7 +25,7 @@ export function renderEmailTemplate({
 <div style="background-color:#f0f0ee;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
   <div style="max-width:480px;margin:0 auto;background-color:#ffffff;border:1px solid #dcdcda;border-radius:16px;padding:40px 32px;">
     <div style="text-align:center;margin-bottom:32px;">
-      <img src="${logoUrl}" alt="Covenant EFC" height="21" style="height:21px;width:auto;display:inline-block;border:0;" />
+      <img src="${logoUrl}" alt="Cleverfish" height="21" style="height:21px;width:auto;display:inline-block;border:0;" />
     </div>
     <h1 style="font-size:22px;font-weight:700;color:#1f2328;margin:0 0 16px;">${heading}</h1>
     <p style="font-size:15px;line-height:1.6;color:#3f3f3f;margin:0 0 24px;">${intro}</p>
