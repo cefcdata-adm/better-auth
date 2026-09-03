@@ -84,45 +84,58 @@ export async function POST(request: NextRequest) {
     clientId,
   });
 
-  sendEmail({
-    to: email,
-    subject: `Your ${appName} access request was received`,
-    html: renderEmailTemplate({
-      heading: "Access request received",
-      intro: `Hi ${escapeHtml(name)}, your request for access to <strong>${escapeHtml(appName)}</strong> has been received. An admin will review it and follow up with you.`,
-      ctaText: "Back to sign in",
-      ctaUrl: `${process.env.BETTER_AUTH_URL}/sign-in`,
-    }),
-  }).catch((e) => console.error("[access-requests] requester notify failed:", e));
-
   // Notify admins — query by role OR by the hardcoded ADMIN_USER_ID (which
   // may not have role='admin' stored in DB if set only via adminUserIds config).
   const adminUrl = `${process.env.BETTER_AUTH_URL}/admin/users`;
   const adminId = process.env.ADMIN_USER_ID;
-  db.select({ email: user.email, id: user.id, role: user.role })
-    .from(user)
-    .then((allUsers) => {
-      const adminEmails = allUsers
-        .filter((u) => u.role === "admin" || u.id === adminId)
-        .map((u) => u.email)
-        .filter((e, i, arr) => arr.indexOf(e) === i); // dedupe
-      return Promise.all(
-        adminEmails.map((adminEmail) =>
-          sendEmail({
-            to: adminEmail,
-            subject: `New access request — ${appName}`,
-            html: renderEmailTemplate({
-              heading: "New access request",
-              intro: `A new access request has been submitted for <strong>${escapeHtml(appName)}</strong>.`,
-              quote: `<strong>Name:</strong> ${escapeHtml(name)}<br/><strong>Email:</strong> ${escapeHtml(email)}`,
-              ctaText: "Review in admin console",
-              ctaUrl: adminUrl,
-            }),
-          }).catch((e) => console.error(`[access-requests] admin notify failed for ${adminEmail}:`, e))
-        )
-      );
-    })
-    .catch((e) => console.error("[access-requests] admin notify failed:", e));
+  const allUsers = await db.select({ email: user.email, id: user.id, role: user.role }).from(user);
+  const adminEmails = allUsers
+    .filter((u) => u.role === "admin" || u.id === adminId)
+    .map((u) => u.email)
+    .filter((e, i, arr) => arr.indexOf(e) === i); // dedupe
 
-  return NextResponse.json({ ok: true }, { status: 201 });
+  const emailNotifications = [
+    {
+      to: email,
+      subject: `Your ${appName} access request was received`,
+      html: renderEmailTemplate({
+        heading: "Access request received",
+        intro: `Hi ${escapeHtml(name)}, your request for access to <strong>${escapeHtml(appName)}</strong> has been received. An admin will review it and follow up with you.`,
+        ctaText: "Back to sign in",
+        ctaUrl: `${process.env.BETTER_AUTH_URL}/sign-in`,
+      }),
+    },
+    ...adminEmails.map((adminEmail) =>
+      ({
+        to: adminEmail,
+        subject: `New access request — ${appName}`,
+        html: renderEmailTemplate({
+          heading: "New access request",
+          intro: `A new access request has been submitted for <strong>${escapeHtml(appName)}</strong>.`,
+          quote: `<strong>Name:</strong> ${escapeHtml(name)}<br/><strong>Email:</strong> ${escapeHtml(email)}`,
+          ctaText: "Review in admin console",
+          ctaUrl: adminUrl,
+        }),
+      })
+    ),
+  ];
+
+  const emailResults = await Promise.allSettled(emailNotifications.map((notification) => sendEmail(notification)));
+
+  const failedEmailCount = emailResults.filter((result) => result.status === "rejected").length;
+  emailResults.forEach((result, index) => {
+    const notification = emailNotifications[index];
+    if (!notification) return;
+    if (result.status === "rejected") {
+      console.error(`[access-requests] email notification failed for ${notification.to}:`, result.reason);
+    } else {
+      console.info(`[access-requests] email notification sent to ${notification.to}`);
+    }
+  });
+
+  if (failedEmailCount > 0) {
+    console.error(`[access-requests] ${failedEmailCount} of ${emailNotifications.length} email notification(s) failed.`);
+  }
+
+  return NextResponse.json({ ok: true, emailNotificationsFailed: failedEmailCount }, { status: 201 });
 }
