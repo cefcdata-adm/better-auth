@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/paul.chan/better-auth/cefc-next add lib/schema.ts drizzle.config.ts package.json package-lock.json)",
+      "Bash(git -C /Users/paul.chan/better-auth/cefc-next commit -m ' *)",
+      "Bash(psql cefc_auth *)",
+      "Bash(git *)"
+    ]
+  }
+}

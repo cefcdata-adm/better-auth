@@ -1,0 +1,20 @@
+{
+  "scripts": {
+    "dev": "npm --prefix cefc-next run dev",
+    "build": "npm --prefix cefc-next run build",
+    "start": "npm --prefix cefc-next run start",
+    "lint": "npm --prefix cefc-next run lint",
+    "pm2:start": "pm2 start cefc-next/ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart cefc-auth",
+    "pm2:stop": "pm2 delete cefc-auth"
+  },
+  "dependencies": {
+    "better-auth": "^1.6.11",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.10"
+  }
+}
