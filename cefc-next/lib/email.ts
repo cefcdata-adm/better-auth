@@ -80,6 +80,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const fromAddress = process.env.SMTP_FROM || process.env.SMTP_USER;
+
 export async function sendEmail({
   to,
   subject,
@@ -93,7 +95,7 @@ export async function sendEmail({
 }) {
   const normalizedHtml = normalizeEmailHtml(html);
   return transporter.sendMail({
-    from: process.env.SMTP_FROM,
+    from: fromAddress,
     to,
     subject,
     html: normalizedHtml,
