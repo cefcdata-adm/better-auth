@@ -39,7 +39,12 @@ export async function POST(
     appName = appRows[0]?.name ?? "Cleverfish";
   }
 
-  sendEmail({
+  await db
+    .update(accessRequests)
+    .set({ status: "rejected", reviewedAt: new Date() })
+    .where(eq(accessRequests.id, id));
+
+  const emailResult = await Promise.allSettled([sendEmail({
     to: accessRequest.email,
     subject: `Your ${appName} access request`,
     html: renderEmailTemplate({
@@ -48,12 +53,15 @@ export async function POST(
       ctaText: "Back to sign in",
       ctaUrl: `${process.env.BETTER_AUTH_URL}/sign-in`,
     }),
-  }).catch((e) => console.error("[reject] notify failed:", e));
+  })]);
 
-  await db
-    .update(accessRequests)
-    .set({ status: "rejected", reviewedAt: new Date() })
-    .where(eq(accessRequests.id, id));
+  const result = emailResult[0];
+  const emailFailed = result?.status === "rejected";
+  if (result?.status === "rejected") {
+    console.error(`[reject] email notification failed for ${accessRequest.email}:`, result.reason);
+  } else {
+    console.info(`[reject] email notification sent to ${accessRequest.email}`);
+  }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, emailNotificationsFailed: emailFailed ? 1 : 0 });
 }

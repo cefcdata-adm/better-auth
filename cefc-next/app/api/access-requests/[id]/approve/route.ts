@@ -88,19 +88,26 @@ export async function POST(
     .where(eq(accessRequests.id, id));
 
   const appLinkUrl = appUrl ?? `${process.env.BETTER_AUTH_URL}/sign-in`;
+  let emailFailed = false;
 
   if (isNewUser) {
     // New account: send set-password email so they can activate their account.
-    // Fire-and-forget — SMTP delays must not block the admin response.
-    auth.api.requestPasswordReset({
+    const emailResult = await Promise.allSettled([auth.api.requestPasswordReset({
       body: {
         email: accessRequest.email,
         redirectTo: `${process.env.BETTER_AUTH_URL}/reset-password`,
       },
-    }).catch((e) => console.error("[approve] requestPasswordReset failed:", e));
+    })]);
+    const result = emailResult[0];
+    emailFailed = result?.status === "rejected";
+    if (result?.status === "rejected") {
+      console.error(`[approve] password reset email failed for ${accessRequest.email}:`, result.reason);
+    } else {
+      console.info(`[approve] password reset email sent to ${accessRequest.email}`);
+    }
   } else {
     // Existing account: notify them that access to this app has been granted.
-    sendEmail({
+    const emailResult = await Promise.allSettled([sendEmail({
       to: accessRequest.email,
       subject: `Your access to ${appName} has been approved`,
       html: renderEmailTemplate({
@@ -109,8 +116,15 @@ export async function POST(
         ctaText: `Go to ${escapeHtml(appName)}`,
         ctaUrl: appLinkUrl,
       }),
-    }).catch((e) => console.error("[approve] approval notify failed:", e));
+    })]);
+    const result = emailResult[0];
+    emailFailed = result?.status === "rejected";
+    if (result?.status === "rejected") {
+      console.error(`[approve] email notification failed for ${accessRequest.email}:`, result.reason);
+    } else {
+      console.info(`[approve] email notification sent to ${accessRequest.email}`);
+    }
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, emailNotificationsFailed: emailFailed ? 1 : 0 });
 }
