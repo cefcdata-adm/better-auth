@@ -84,6 +84,17 @@ export async function POST(request: NextRequest) {
     clientId,
   });
 
+  sendEmail({
+    to: email,
+    subject: `Your ${appName} access request was received`,
+    html: renderEmailTemplate({
+      heading: "Access request received",
+      intro: `Hi ${escapeHtml(name)}, your request for access to <strong>${escapeHtml(appName)}</strong> has been received. An admin will review it and follow up with you.`,
+      ctaText: "Back to sign in",
+      ctaUrl: `${process.env.BETTER_AUTH_URL}/sign-in`,
+    }),
+  }).catch((e) => console.error("[access-requests] requester notify failed:", e));
+
   // Notify admins — query by role OR by the hardcoded ADMIN_USER_ID (which
   // may not have role='admin' stored in DB if set only via adminUserIds config).
   const adminUrl = `${process.env.BETTER_AUTH_URL}/admin/users`;
@@ -107,7 +118,7 @@ export async function POST(request: NextRequest) {
               ctaText: "Review in admin console",
               ctaUrl: adminUrl,
             }),
-          })
+          }).catch((e) => console.error(`[access-requests] admin notify failed for ${adminEmail}:`, e))
         )
       );
     })
